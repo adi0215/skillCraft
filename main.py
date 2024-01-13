@@ -36,7 +36,7 @@ def fetch_user():
 
 def get_email():
     users = airtable.get_all()
-    emails = [user['fields']['email'] for user in users]
+    emails = [user['fields']['email'] for user in users if 'fields' in user and 'email' in user['fields']]
     return emails
 
 def get_username():
@@ -45,7 +45,7 @@ def get_username():
     return usernames
 
 def validate_email(email):
-    pattern = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
+    pattern = r"^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
     return re.match(pattern, email)
 
 def validate_username(username):
