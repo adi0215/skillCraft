@@ -9,17 +9,15 @@ TABLE_NAME = 'login'
 
 airtable = Airtable(BASE_ID, TABLE_NAME, api_key=API_KEY)
 
-# Define global variables
+
 global email, username, password, cnfPassword
 
-# Define session state
 class SessionState:
     def __init__(self):
         self.email = None
         self.username = None
         self.authentication_status = False
 
-# Initialize session state
 session_state = SessionState()
 
 def insert_user():
@@ -108,7 +106,6 @@ def user_login():
     if email:
         if validate_email(email):
             if email in get_email():
-                # Check if the password matches (replace this with proper password checking logic)
                 user_record = airtable.search('email', email)[0]
                 if user_record['fields']['password'] == password:
                     session_state.email = email
