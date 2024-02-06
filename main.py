@@ -3,15 +3,14 @@ import re
 import datetime
 from airtable import Airtable
 from home import homepage
+from practice import practice_page
 
 BASE_ID = "appQUrbees7orvriu"
 API_KEY = "patsJioGGlyzjX95s.9470d22630e0e2729f0cc9b2a5ef20f741741e5fa35f8b6093c48ec2339552e2"
-TABLE_NAME = 'login'
+LOGIN_TABLE = 'login'
+CATEGORY_TABLE = 'categories'
 
-airtable = Airtable(BASE_ID, TABLE_NAME, api_key=API_KEY)
-
-
-global email, username, password, cnfPassword
+airtable = Airtable(BASE_ID, LOGIN_TABLE, api_key=API_KEY)
 
 class SessionState:
     def __init__(self):
@@ -127,13 +126,21 @@ def user_signout():
     session_state.username = None
     session_state.authentication_status = False
     st.success("You have been successfully signed out!")
-    
+
+def get_categories():
+    formula = f"{{name}}='{CATEGORY_TABLE}'"
+    categories = airtable.get_all(formula=formula)
+    return [category['fields']['cname'] for category in categories]
+
+def get_categories():
+    formula = f"{{name}}='{CATEGORY_TABLE}'"
+    categories = airtable.get_all(table=CATEGORY_TABLE, formula=formula)
+    return [category['fields']['name'] for category in categories]
+
 
 def main():
-    global authentication_status
-
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Select a page", ["Home", "Login", "Signup"])
+    page = st.sidebar.selectbox("Select a page", ["Home", "Login", "Signup", "Practice"])
 
     if page == "Home":
         st.title("SkillCraft")
@@ -145,20 +152,16 @@ def main():
     elif page == "Signup":
         user_signup()
 
+    elif page == "Practice":
+        practice_page()
+
     if session_state.authentication_status:
-            st.sidebar.write(f"Welcome, {session_state.username}!")
-            if st.sidebar.button("LogOut"):
-                user_signout()
-                
-                
+        st.sidebar.write(f"Welcome, {session_state.username}!" if session_state.authentication_status else "")
+        if st.sidebar.button("LogOut"):
+            user_signout()
 
     st.sidebar.markdown("---")
     st.sidebar.text("👤  " + session_state.username if session_state.authentication_status else "")
 
-
 if __name__ == "__main__":
     main()
-
-
-
-
