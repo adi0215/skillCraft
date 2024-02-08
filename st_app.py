@@ -14,7 +14,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 CHUNK = 1024
-WAVE_OUTPUT_FILENAME = "./audio/file.wav"
+WAVE_OUTPUT_FILENAME = "file.wav"
 client = openai.OpenAI(api_key=st.secrets["OPENAI_API"])   #API KEY
 def record_audio(filename, stop_event):
     audio = pyaudio.PyAudio()
