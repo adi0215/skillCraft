@@ -2,24 +2,22 @@ import streamlit as st
 import re
 import datetime
 from airtable import Airtable
+from home import homepage
+from practice import practice_page
 
 BASE_ID = "appQUrbees7orvriu"
 API_KEY = "patsJioGGlyzjX95s.9470d22630e0e2729f0cc9b2a5ef20f741741e5fa35f8b6093c48ec2339552e2"
-TABLE_NAME = 'login'
+LOGIN_TABLE = 'login'
+CATEGORY_TABLE = 'categories'
 
-airtable = Airtable(BASE_ID, TABLE_NAME, api_key=API_KEY)
+airtable = Airtable(BASE_ID, LOGIN_TABLE, api_key=API_KEY)
 
-# Define global variables
-global email, username, password, cnfPassword
-
-# Define session state
 class SessionState:
     def __init__(self):
         self.email = None
         self.username = None
         self.authentication_status = False
 
-# Initialize session state
 session_state = SessionState()
 
 def insert_user():
@@ -38,7 +36,7 @@ def fetch_user():
 
 def get_email():
     users = airtable.get_all()
-    emails = [user['fields']['email'] for user in users]
+    emails = [user['fields']['email'] for user in users if 'fields' in user and 'email' in user['fields']]
     return emails
 
 def get_username():
@@ -47,7 +45,7 @@ def get_username():
     return usernames
 
 def validate_email(email):
-    pattern = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
+    pattern = r"^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
     return re.match(pattern, email)
 
 def validate_username(username):
@@ -108,7 +106,6 @@ def user_login():
     if email:
         if validate_email(email):
             if email in get_email():
-                # Check if the password matches (replace this with proper password checking logic)
                 user_record = airtable.search('email', email)[0]
                 if user_record['fields']['password'] == password:
                     session_state.email = email
@@ -130,14 +127,24 @@ def user_signout():
     session_state.authentication_status = False
     st.success("You have been successfully signed out!")
 
-def main():
-    global authentication_status
+def get_categories():
+    formula = f"{{name}}='{CATEGORY_TABLE}'"
+    categories = airtable.get_all(formula=formula)
+    return [category['fields']['cname'] for category in categories]
 
+def get_categories():
+    formula = f"{{name}}='{CATEGORY_TABLE}'"
+    categories = airtable.get_all(table=CATEGORY_TABLE, formula=formula)
+    return [category['fields']['name'] for category in categories]
+
+
+def main():
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Select a page", ["Home", "Login", "Signup"])
+    page = st.sidebar.selectbox("Select a page", ["Home", "Login", "Signup", "Practice"])
 
     if page == "Home":
-        st.title("SkillCraft Homepage")
+        st.title("SkillCraft")
+        homepage()
 
     elif page == "Login":
         user_login()
@@ -145,18 +152,16 @@ def main():
     elif page == "Signup":
         user_signup()
 
+    elif page == "Practice":
+        practice_page()
+
     if session_state.authentication_status:
-        st.sidebar.write(f"Welcome, {session_state.username}!")
+        st.sidebar.write(f"Welcome, {session_state.username}!" if session_state.authentication_status else "")
         if st.sidebar.button("LogOut"):
             user_signout()
 
     st.sidebar.markdown("---")
     st.sidebar.text("👤  " + session_state.username if session_state.authentication_status else "")
 
-
-
 if __name__ == "__main__":
     main()
-
-
-
