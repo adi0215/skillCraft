@@ -14,8 +14,9 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 CHUNK = 1024
-WAVE_OUTPUT_FILENAME = "./audio/file.wav"
+WAVE_OUTPUT_FILENAME = "file.wav"
 client = openai.OpenAI(api_key=st.secrets["OPENAI_API"])   #API KEY
+st.set_page_config(layout="wide")
 def record_audio(filename, stop_event):
     audio = pyaudio.PyAudio()
 
@@ -118,7 +119,7 @@ def mainGPT():
                 {
                     position: fixed;
                     bottom: 71px;
-                    padding-left:710px;
+                    padding-left:1010px;
                 }
                 """,
         ):
@@ -176,7 +177,3 @@ def mainGPT():
             generate(prompt, assistant_id)
     mic = None
     prompt = ""
-
-
-
-
