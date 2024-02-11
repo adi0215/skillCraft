@@ -1,4 +1,4 @@
 audio/
-.streamlit
+.streamlit/secrets.toml
 venv
 __pycache__/
