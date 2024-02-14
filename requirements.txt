@@ -3,4 +3,5 @@ airtable-python.wrapper
 streamlit==1.31.0
 git+https://github.com/openai/whisper.git
 pyaudio
-code_editor
+streamlit-code-editor==0.1.10
+streamlit_extras
