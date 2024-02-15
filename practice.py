@@ -2,12 +2,16 @@ import streamlit as st
 from airtable import Airtable
 import openai
 import time
-import pages.st_app as st_app
+import st_app as st_app
 from sandbox import custom_btns
 from code_editor import code_editor
+from st_pages import hide_pages
+
+hide_pages(['Code'])
+hide_pages(['Intro'])
 
 import os
-st.set_page_config(page_title="coding")
+
 BASE_ID = st.secrets['BASE_ID']
 API_KEY = st.secrets['API_KEY']
 client = openai.OpenAI(api_key=st.secrets['OPENAI_API'])
@@ -80,8 +84,6 @@ def python_code():
             with open("tempCode/output.txt", "r") as f:
                 output = f.read()
             st.write(output)
-    os.remove("tempCode/temp.py")
-    os.remove("tempCode/output.txt")
 def java_code():
     your_code_string = "// Write you code here"
     response_dict = code_editor(your_code_string,
@@ -137,5 +139,5 @@ def practice_page():
             java_code()
     with chat:
             st_app.mainGPT()
-            
 practice_page()
+            

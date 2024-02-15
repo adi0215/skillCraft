@@ -99,31 +99,30 @@ def mainGPT():
         st.session_state.thread_id = None
     #st.set_page_config(page_title="GPT", page_icon=":robot_face:")
     st.session_state.thread_id = thread_id
-
+    with stylable_container(
+            key="button",
+            css_styles="""
+                {
+                    position: fixed;
+                    bottom: 50px;
+                    padding-left:1010px;
+                }
+                """,
+        ):
+        mic = st.button("🎙️")
    
     with stylable_container(
             key="text",
             css_styles="""
                 {
                     position: fixed;
-                    bottom: 71px;
-                    border-bottom-color: black;
-                    border-bottom-width:100px
+                    bottom: 50px;
+                    width: 75%;   
                 }
                 """,
         ):
         prompt = st.chat_input("Type your query...")
-    with stylable_container(
-            key="button",
-            css_styles="""
-                {
-                    position: fixed;
-                    bottom: 71px;
-                    padding-left:1010px;
-                }
-                """,
-        ):
-        mic = st.button("🎙️")
+    
 
 
     #st.title("Chat")

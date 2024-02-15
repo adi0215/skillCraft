@@ -1,0 +1,51 @@
+
+div.st-emotion-cache-1r6slb0 button.st-emotion-cache-19rxjzo.ef3psqc12{
+  
+    height: 50px;
+    width: 200px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+@keyframes myAnim {
+	0% {
+		opacity: 0;
+		transform: translateY(-250px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+div.stMarkdown p{
+    color: white;
+    font-size: 70px;
+    text-align: center;
+    margin-top: 100px;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    animation: myAnim 2s ease 0s 1 normal forwards;
+}
+div.row-widget.stButton{
+    text-align: center;
+}
+
+button.st-emotion-cache-19rxjzo.ef3psqc12{
+    border-radius: 30px;
+    text-align: center;
+    margin-top: 100px;
+    margin-bottom: 300px;
+    height: 50px;
+    width: 50px;
+    
+}
+button.st-emotion-cache-19rxjzo.ef3psqc12:hover{
+    border-color: #45afcc;
+    color: #45afcc;
+}
+
+
