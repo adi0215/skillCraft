@@ -96,7 +96,29 @@ def python_code():
 
 
     
-
+def java_code():
+    your_code_string = "// Write you code here"
+    response_dict = code_editor(your_code_string,
+                                height=[20, 30],
+                                shortcuts="vscode",
+                                focus=True,
+                                theme="vs-dark",
+                                buttons=custom_btns,
+                                key="my_editor",
+                                allow_reset=True,
+                                lang='java')
+    print(response_dict)
+    if response_dict['text']!=your_code_string:
+        with st.spinner("Running your code..."):
+            with open("Temp.java", "w") as f:
+                f.write(response_dict['text'])
+            os.system("javac Temp.java > output.txt")
+            os.system("java temp > output.txt")
+            with open("output.txt", "r") as f:
+                output = f.read()
+            with st.expander("Output"):
+                # st.success("Accepted")
+                st.code(output)
    
 
 
@@ -123,13 +145,14 @@ def practice_page():
     code, chat = st.tabs(["**Solve**", "**CodeX**"])
     
     with code:
-        lang=st.selectbox("Select a language", ["Python", "C++"])
+        lang=st.selectbox("Select a language", ["Python", "C++","Java"])
         
         if lang == "Python":
             python_code()
         elif lang == "C++":
             pass
-        
+        elif lang == "Java":
+            java_code()
     with chat:
             st_app.mainGPT()
 practice_page()
