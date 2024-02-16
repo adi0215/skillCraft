@@ -43,6 +43,12 @@ def displayTab(tabsVar, tabNo, selected_category):
             
         else:
             st.sidebar.warning("**No questions available**")
+import io
+import sys
+
+import io
+import sys
+
 def python_code():
     your_code_string = "# Write you code here"
     response_dict = code_editor(your_code_string,
@@ -118,7 +124,7 @@ def practice_page():
     code, chat = st.tabs(["**Solve**", "**CodeX**"])
     
     with code:
-        lang=st.selectbox("Select a language", ["Python", "C++", "Java"])
+        lang=st.selectbox("Select a language", ["Python", "C++","Java"])
         
         if lang == "Python":
             python_code()

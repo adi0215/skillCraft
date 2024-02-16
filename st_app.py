@@ -105,7 +105,7 @@ def mainGPT(assistant_id, thread_id, client, model):
             prompt = st.chat_input("Type your query...", key="prompt")
         with col2:
             mic = st.button("🎙️", key="mic")
-    
+            
     with stylable_container(
             key="chat",
             css_styles="""
@@ -149,7 +149,7 @@ def mainGPT(assistant_id, thread_id, client, model):
                 st.session_state['record_thread'] = threading.Thread(target=record_audio, args=(WAVE_OUTPUT_FILENAME, st.session_state['stop_event']))
                 st.session_state['record_thread'].start()
                 st.session_state['recording'] = True
-                
+
         if prompt:
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
