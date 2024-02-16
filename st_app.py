@@ -117,7 +117,7 @@ def mainGPT():
                 {
                     position: fixed;
                     bottom: 50px;
-                    width: 75%;   
+                    width: 60%;   
                 }
                 """,
         ):
@@ -130,7 +130,7 @@ def mainGPT():
             key="chat",
             css_styles="""
                 {
-                    height:400px;
+                    height:80%;
                     position:fixed;
                     overflow:scroll;
                 }
