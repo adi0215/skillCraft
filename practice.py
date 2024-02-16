@@ -1,38 +1,17 @@
 import streamlit as st
 from airtable import Airtable
 import openai
-import time
 import st_app as st_app
 from sandbox import custom_btns
 from code_editor import code_editor
 from st_pages import hide_pages
-
-hide_pages(['Code'])
-hide_pages(['Intro'])
-
 import os
-
-BASE_ID = st.secrets['BASE_ID']
-API_KEY = st.secrets['API_KEY']
-client = openai.OpenAI(api_key=st.secrets['OPENAI_API'])
-
-assistant_id = "asst_yyHIOR8BX2rbgHkRDLmq3W54"  #Default assistant. Do not modofy this value.
-thread_id = "thread_wQDeamGZrw3mzy6CIHmghs90"  #Default thread. Do not modofy this value.
-CATEGORY_TABLE = "categories"
-QUESTIONS_TABLE = "questions"
-
-airtable_categories = Airtable(BASE_ID, CATEGORY_TABLE, api_key=API_KEY)
-airtable_questions = Airtable(BASE_ID, QUESTIONS_TABLE, api_key=API_KEY)
-
-
-def get_categories():
-    categories = airtable_categories.get_all()
-    return [category['fields']['cname'] for category in categories]
-
+hide_pages(['Intro'])
+hide_pages(['Code'])
 def get_questions_by_category(category):
     try:
         filter_formula = f"{{cname}}='{category}'"
-        questions = airtable_questions.get_all(formula=filter_formula)
+        questions = st.session_state["airtable_questions"].get_all(formula=filter_formula)
         return questions
     except Exception as e:
         print("Error:", e)
@@ -84,10 +63,10 @@ def python_code():
     print(response_dict)
     if response_dict['text']!=your_code_string:
         with st.spinner("Running your code..."):
-            with open("tempCode/temp.py", "w") as f:
+            with open("temp.py", "w") as f:
                 f.write(response_dict['text'])
-            os.system("python tempCode/temp.py > tempCode/output.txt")
-            with open("tempCode/output.txt", "r") as f:
+            os.system("python temp.py > output.txt")
+            with open("output.txt", "r") as f:
                 output = f.read()
             with st.expander("Output"):
                 # st.success("Accepted")
@@ -119,8 +98,6 @@ def java_code():
             with st.expander("Output"):
                 # st.success("Accepted")
                 st.code(output)
-   
-
 
 def practice_page():
     st.sidebar.markdown("""
@@ -135,12 +112,14 @@ def practice_page():
             Topics
         </div>
         """, unsafe_allow_html=True)
-    categories = get_categories()
+
+    categories = st.session_state["categories"]
     arr,tree,string,linkedList = st.sidebar.tabs(categories)
     displayTab(arr, 0, categories)
     displayTab(tree, 1, categories)
     displayTab(string, 2, categories)
     displayTab(linkedList, 3, categories)
+    st.session_state["css_displayed"] = False
 
     code, chat = st.tabs(["**Solve**", "**CodeX**"])
     
@@ -154,6 +133,7 @@ def practice_page():
         elif lang == "Java":
             java_code()
     with chat:
-            st_app.mainGPT()
+            st_app.mainGPT(st.session_state["assistant_id"], st.session_state["thread_id"], 
+                           st.session_state["client"], st.session_state["model"])
 practice_page()
             

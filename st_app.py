@@ -1,25 +1,21 @@
-import openai
-import time
 import streamlit as st
+import time
 import io
 from PIL import Image
-import whisper
 import pyaudio
 import wave
 import numpy as np
 import threading
 from streamlit_extras.stylable_container import stylable_container
+import os
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 CHUNK = 1024
 WAVE_OUTPUT_FILENAME = "file.wav"
-client = openai.OpenAI(api_key=st.secrets["OPENAI_API"])   #API KEY
-st.set_page_config(layout="wide")
 def record_audio(filename, stop_event):
     audio = pyaudio.PyAudio()
-
     stream = audio.open(format=FORMAT, channels=CHANNELS,
                         rate=RATE, input=True,
                         frames_per_buffer=CHUNK)
@@ -41,12 +37,11 @@ def record_audio(filename, stop_event):
     waveFile.writeframes(b''.join(frames))
     waveFile.close()
 
-def transcribe_audio(filename):
-    model = whisper.load_model("small")
+def transcribe_audio(filename, model):
     result = model.transcribe(filename)
     return result["text"]
 
-def generate(prompt, assistant_id):
+def generate(prompt, assistant_id, client):
     client.beta.threads.messages.create(
         thread_id=st.session_state.thread_id, role="user", content=prompt
     )
@@ -89,48 +84,34 @@ def generate(prompt, assistant_id):
                 with st.chat_message("assistant"):
                     st.markdown(f"**CodeX** : {full_response}",unsafe_allow_html=True)
                 full_response = ""
-def mainGPT(): 
-    
-    assistant_id = "asst_yyHIOR8BX2rbgHkRDLmq3W54"  #Default assistant. Do not modify this value.
-    thread_id = "thread_wDXfRFDEMmdiHPSWCMGYQsdp"  #Default thread. Do not modify this value.
+                
+def mainGPT(assistant_id, thread_id, client, model):
+    #st.set_page_config(layout="wide")
     st.session_state.start_chat = True
-
-    if "thread_id" not in st.session_state:
-        st.session_state.thread_id = None
-    #st.set_page_config(page_title="GPT", page_icon=":robot_face:")
     st.session_state.thread_id = thread_id
     with stylable_container(
-            key="button",
-            css_styles="""
-                {
-                    position: fixed;
-                    bottom: 50px;
-                    padding-left:1010px;
-                }
-                """,
-        ):
-        mic = st.button("🎙️")
-   
-    with stylable_container(
-            key="text",
-            css_styles="""
-                {
-                    position: fixed;
-                    bottom: 50px;
-                    width: 60%;   
-                }
-                """,
-        ):
-        prompt = st.chat_input("Type your query...")
-    
-
-
-    #st.title("Chat")
+        key="combined_container",
+        css_styles="""
+            {
+                position: fixed;
+                bottom: 50px;
+                width: 60%;
+                justify-content: space-between;
+            }
+            """,
+    ):
+        col1, col2 = st.columns([20,1])
+        with col1:
+            prompt = st.chat_input("Type your query...", key="prompt")
+        with col2:
+            mic = st.button("🎙️", key="mic")
+            
     with stylable_container(
             key="chat",
             css_styles="""
                 {
-                    height:80%;
+                    height: 600px;
+                    width: 60%;
                     position:fixed;
                     overflow:scroll;
                 }
@@ -151,28 +132,28 @@ def mainGPT():
                     st.image(message["image"])
                 else:
                     st.markdown(message["content"])
-    
-            
         if mic:
             if st.session_state['recording']:
-                st.session_state['stop_event'].set()
-                st.session_state['record_thread'].join()
-                st.session_state['recording'] = False
-                transcription = str(transcribe_audio(WAVE_OUTPUT_FILENAME))
-                st.session_state.messages.append({"role": "user", "content": transcription})
-                with st.chat_message("user"):
-                    st.markdown(f"**You** : {transcription}")
-                generate(transcription, assistant_id)
+                with st.spinner("Processing..."):
+                    st.session_state['stop_event'].set()
+                    st.session_state['record_thread'].join()
+                    st.session_state['recording'] = False
+                    print("Stopped")
+                    transcription = str(transcribe_audio(WAVE_OUTPUT_FILENAME, model))
+                    st.session_state.messages.append({"role": "user", "content": transcription})
+                    with st.chat_message("user"):
+                        st.markdown(f"**You** : {transcription}")
+                    generate(transcription, assistant_id, client)
             else:
                 st.session_state['stop_event'].clear()
                 st.session_state['record_thread'] = threading.Thread(target=record_audio, args=(WAVE_OUTPUT_FILENAME, st.session_state['stop_event']))
                 st.session_state['record_thread'].start()
                 st.session_state['recording'] = True
-                
+
         if prompt:
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(f"**You** : {prompt}")
-            generate(prompt, assistant_id)
+            generate(prompt, assistant_id, client)
     mic = None
     prompt = ""
