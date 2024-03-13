@@ -41,7 +41,7 @@ def transcribe_audio(filename, model):
     result = model.transcribe(filename)
     return result["text"]
 
-def generate(prompt, assistant_id, client):
+def generate(prompt, assistant_id, client,botName):
     client.beta.threads.messages.create(
         thread_id=st.session_state.thread_id, role="user", content=prompt
     )
@@ -82,10 +82,10 @@ def generate(prompt, assistant_id, client):
                 if full_response:
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                 with st.chat_message("assistant"):
-                    st.markdown(f"**CodeX** : {full_response}",unsafe_allow_html=True)
+                    st.markdown(f"**{botName}** : {full_response}",unsafe_allow_html=True)
                 full_response = ""
                 
-def mainGPT(assistant_id, thread_id, client, model):
+def mainGPT(assistant_id, thread_id, client, model,botName):
     #st.set_page_config(layout="wide")
     st.session_state.start_chat = True
     st.session_state.thread_id = thread_id
@@ -110,8 +110,9 @@ def mainGPT(assistant_id, thread_id, client, model):
             key="chat",
             css_styles="""
                 {
-                    height: 600px;
+                    height: 70%;
                     width: 60%;
+                    top: 100px;
                     position:fixed;
                     overflow:scroll;
                 }
@@ -125,7 +126,10 @@ def mainGPT(assistant_id, thread_id, client, model):
         if "openai_model" not in st.session_state:
             st.session_state.openai_model = "gpt-4-turbo-preview"
         if "messages" not in st.session_state:
-            st.session_state.messages = [{"role": "assistant", "content": f"**CodeX** : Hi! I'm CodeX. What can I help you with?"}]
+            if botName == "CodeX":
+                st.session_state.messages = [{"role": "assistant", "content": f"**{botName}** : Hi! I'm {botName}. What can I help you with?"}]
+            elif botName == "HR bot":
+                st.session_state.messages = [{"role": "assistant", "content": f"**{botName}** : Hi! I'm {botName}. Shall we start the interview?"}]
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 if "image" in message:
@@ -143,7 +147,7 @@ def mainGPT(assistant_id, thread_id, client, model):
                     st.session_state.messages.append({"role": "user", "content": transcription})
                     with st.chat_message("user"):
                         st.markdown(f"**You** : {transcription}")
-                    generate(transcription, assistant_id, client)
+                    generate(transcription, assistant_id, client,botName)
             else:
                 st.session_state['stop_event'].clear()
                 st.session_state['record_thread'] = threading.Thread(target=record_audio, args=(WAVE_OUTPUT_FILENAME, st.session_state['stop_event']))
@@ -154,6 +158,6 @@ def mainGPT(assistant_id, thread_id, client, model):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(f"**You** : {prompt}")
-            generate(prompt, assistant_id, client)
+            generate(prompt, assistant_id, client,botName)
     mic = None
     prompt = ""

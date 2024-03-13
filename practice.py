@@ -5,9 +5,15 @@ import st_app as st_app
 from sandbox import custom_btns
 from code_editor import code_editor
 from st_pages import hide_pages
+from streamlit_extras.stylable_container import stylable_container
+from session_states import init_assistant
 import os
 hide_pages(['Intro'])
 hide_pages(['Code'])
+hide_pages(['HR'])
+init_assistant()
+st.session_state["assistant_id"] = "asst_yyHIOR8BX2rbgHkRDLmq3W54"
+st.session_state["botName"]="CodeX"
 def get_questions_by_category(category):
     try:
         filter_formula = f"{{cname}}='{category}'"
@@ -43,11 +49,6 @@ def displayTab(tabsVar, tabNo, selected_category):
             
         else:
             st.sidebar.warning("**No questions available**")
-import io
-import sys
-
-import io
-import sys
 
 def python_code():
     your_code_string = "# Write you code here"
@@ -120,8 +121,19 @@ def practice_page():
     displayTab(string, 2, categories)
     displayTab(linkedList, 3, categories)
     st.session_state["css_displayed"] = False
+    with stylable_container(
+        key="tabs",
+        css_styles="""
+            {
+                position: fixed;
+                top: 50px;
+                width: 60%;
+                justify-content: space-between;
+            }
+            """,
+    ):
 
-    code, chat = st.tabs(["**Solve**", "**CodeX**"])
+        code, chat = st.tabs(["**Solve**", "**CodeX**"])
     
     with code:
         lang=st.selectbox("Select a language", ["Python", "C++","Java"])
@@ -134,6 +146,6 @@ def practice_page():
             java_code()
     with chat:
             st_app.mainGPT(st.session_state["assistant_id"], st.session_state["thread_id"], 
-                           st.session_state["client"], st.session_state["model"])
+                           st.session_state["client"], st.session_state["model"],st.session_state["botName"])
 practice_page()
             
