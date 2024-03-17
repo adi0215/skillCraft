@@ -3,7 +3,7 @@ import re
 import datetime
 from airtable import Airtable
 from home import homepage
-from pages.practice import practice_page
+# from pages.practice import practice_page
 
 BASE_ID = "appQUrbees7orvriu"
 API_KEY = "patsJioGGlyzjX95s.9470d22630e0e2729f0cc9b2a5ef20f741741e5fa35f8b6093c48ec2339552e2"
