@@ -1,9 +1,7 @@
 import streamlit as st
 from airtable import Airtable
-import openai
-import st_app as st_app
+import hr_bot as hr_bot
 from st_pages import hide_pages
-import os
 from session_states import init_assistant
 from streamlit_extras.stylable_container import stylable_container
 init_assistant()
@@ -11,8 +9,6 @@ st.set_page_config(
     initial_sidebar_state='collapsed'
 )
 
-
-st.session_state["assistant_id"] = "asst_3ypiZrjnDp55f3tVuaNfFTNJ"
 st.session_state["botName"]="HR bot"
 def get_questions_by_category(category):
     try:
@@ -69,7 +65,7 @@ def hr_chat():
             }
             """,
     ):
-        st_app.mainGPT(st.session_state["assistant_id"], st.session_state["thread_id"], 
+        hr_bot.mainGPT(st.session_state["hr_thread_id"], 
             st.session_state["client"], st.session_state["model"],st.session_state["botName"])
 hr_chat()
             
