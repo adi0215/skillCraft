@@ -43,8 +43,6 @@ def displayTab(tabsVar, tabNo, selected_category):
             
         else:
             st.sidebar.warning("**No questions available**")
-import io
-import sys
 
 import io
 import sys
@@ -136,4 +134,3 @@ def practice_page():
             st_app.mainGPT(st.session_state["assistant_id"], st.session_state["thread_id"], 
                            st.session_state["client"], st.session_state["model"])
 practice_page()
-            
