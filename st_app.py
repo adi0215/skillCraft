@@ -95,7 +95,7 @@ def mainGPT(assistant_id, thread_id, client, model,botName):
             {
                 position: fixed;
                 bottom: 50px;
-                width: 60%;
+                width: 42vw;
                 justify-content: space-between;
             }
             """,
@@ -111,7 +111,7 @@ def mainGPT(assistant_id, thread_id, client, model,botName):
             css_styles="""
                 {
                     height: 70%;
-                    width: 60%;
+                    width: 50%;
                     top: 100px;
                     position:fixed;
                     overflow:scroll;

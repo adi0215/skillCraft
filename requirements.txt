@@ -6,3 +6,5 @@ pyaudio
 streamlit-code-editor==0.1.10
 streamlit_extras
 st_pages
+streamlit_lottie
+streamlit_oauth

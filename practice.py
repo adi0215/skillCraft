@@ -1,6 +1,5 @@
 import streamlit as st
 from airtable import Airtable
-import openai
 import st_app as st_app
 from sandbox import custom_btns
 from code_editor import code_editor
@@ -53,7 +52,7 @@ def displayTab(tabsVar, tabNo, selected_category):
 def python_code():
     your_code_string = "# Write you code here"
     response_dict = code_editor(your_code_string,
-                                height=[20, 30],
+                                height=[15, 15],
                                 shortcuts="vscode",
                                 focus=True,
                                 theme="vs-dark",
@@ -79,7 +78,7 @@ def python_code():
 def java_code():
     your_code_string = "// Write you code here"
     response_dict = code_editor(your_code_string,
-                                height=[20, 30],
+                                height=[15, 15],
                                 shortcuts="vscode",
                                 focus=True,
                                 theme="vs-dark",
@@ -101,6 +100,13 @@ def java_code():
                 st.code(output)
 
 def practice_page():
+    st.markdown(f'''
+    <style>
+    section[data-testid="stSidebar"]{{width: 50% !important; 
+                max-width: 100vw !important; 
+                min-width: 2vw !important;}}
+    </style>
+    ''',unsafe_allow_html=True)
     st.sidebar.markdown("""
         <style>
         .big-font {
@@ -127,25 +133,25 @@ def practice_page():
             {
                 position: fixed;
                 top: 50px;
-                width: 60%;
+                width: 40%;
                 justify-content: space-between;
             }
             """,
     ):
-
+     
         code, chat = st.tabs(["**Solve**", "**CodeX**"])
-    
-    with code:
-        lang=st.selectbox("Select a language", ["Python", "C++","Java"])
-        
-        if lang == "Python":
-            python_code()
-        elif lang == "C++":
-            pass
-        elif lang == "Java":
-            java_code()
-    with chat:
-            st_app.mainGPT(st.session_state["assistant_id"], st.session_state["thread_id"], 
-                           st.session_state["client"], st.session_state["model"],st.session_state["botName"])
+ 
+        with code:
+            lang=st.selectbox("Select a language", ["Python", "C++","Java"])
+            
+            if lang == "Python":
+                python_code()
+            elif lang == "C++":
+                pass
+            elif lang == "Java":
+                java_code()
+        with chat:
+                st_app.mainGPT(st.session_state["assistant_id"], st.session_state["thread_id"], 
+                            st.session_state["client"], st.session_state["model"],st.session_state["botName"])
 practice_page()
             
