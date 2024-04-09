@@ -1,10 +1,7 @@
 import streamlit as st
-import streamlit.components.v1 as components
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import Page, show_pages, hide_pages
 from session_states import init_assistant
-from signup import user_signup
-from login import user_login
 from streamlit_lottie import st_lottie
 import json
 import streamlit_shadcn_ui as ui
@@ -32,11 +29,13 @@ st.markdown( """ <style> [data-testid="collapsedControl"] { display: none } </st
 show_pages([
     Page("app.py","Intro"),
     Page("practice.py","Code"),
-    Page("hr.py","HR")
+    Page("hr.py","HR"),
+    Page("apt.py","Aptitude"),
 ])
 
 hide_pages(['Code'])
 hide_pages(['HR'])
+hide_pages(['Aptitude'])
 
 #read css file
 print(st.session_state["css_displayed"] if "css_displayed" in st.session_state else "First run")
@@ -159,7 +158,7 @@ with st.container():
         """, unsafe_allow_html=True)
         aptbutton = st.button(":blue[Solve..]")
         if aptbutton:
-            pass
+            switch_page("Aptitude")
     hcol1, hcol2 = st.columns([0.35, 0.75])
     with hcol1:
         st_lottie(

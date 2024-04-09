@@ -8,3 +8,5 @@ streamlit_extras
 st_pages
 streamlit_lottie
 streamlit_oauth
+streamlit_shadcn_ui
+streamlit_book
