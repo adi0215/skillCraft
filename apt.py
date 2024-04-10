@@ -5,8 +5,9 @@ from sandbox import custom_btns
 from code_editor import code_editor
 from st_pages import hide_pages
 from streamlit_extras.stylable_container import stylable_container
-from session_states import init_assistant,apti_init
+from session_states import init_assistant, apti_init
 import streamlit_book as stb
+from streamlit_card import card
 
 hide_pages(['Intro'])
 hide_pages(['Code'])
@@ -15,6 +16,16 @@ hide_pages(['Aptitude'])
 init_assistant()
 st.session_state["assistant_id"] = "asst_yyHIOR8BX2rbgHkRDLmq3W54"
 st.session_state["botName"]="AptiBot"
+
+def hint_call(q):
+    response = st.session_state.client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages = [
+            {"role": "system", "content": f"For the given question below. You are supposed to return an appropriate hint. Do NOT answer the question, just give a hint such that it guides the reader to the correct solution. Question : {q}"}
+        ]
+    )
+    return response.choices[0].message.content
+
 def get_questions_by_category(category):
     try:
         filter_formula = f"{{category}}='{category}'"
@@ -49,6 +60,14 @@ def displayTab(selected_category):
                 ans = stb.single_choice(question=question["fields"]["question"],options=[question["fields"]["op1"],question["fields"]["op2"],question["fields"]["op3"],question["fields"]["op4"]],answer_index=question["fields"]["ans_int"])
                 if ans[0]:
                     calculate_score(ans[1],quiz_len=quiz_len)
+                hint_button = st.button("Hint")
+                if hint_button:
+                    hint = hint_call(question["fields"]["question"])
+                    placeholder = st.empty()
+                    with placeholder:
+                        st.markdown(f"**:green[Hint: ]**\n{hint}")
+                    placeholder = st.empty()
+                
     else:
         st.session_state.end_quiz = False
         st.session_state.current_question = 0
@@ -57,10 +76,10 @@ def displayTab(selected_category):
         
         return
 
-def practice_page():
+def apt_chat():
     st.markdown(f'''
     <style>
-    section[data-testid="stSidebar"]{{width: 50% !important; 
+    section[data-testid="stSidebar"]{{width: 40% !important; 
                 max-width: 100vw !important; 
                 min-width: 2vw !important;}}
     </style>
@@ -94,7 +113,7 @@ def practice_page():
             """,
     ):
      
-        apt_bot.mainGPT(st.session_state["hr_thread_id"], 
-            st.session_state["client"], st.session_state["model"],st.session_state["botName"])
-practice_page()
+        apt_bot.mainGPT(st.session_state["apt_assistant_id"], 
+            st.session_state["apt_thread_id"], st.session_state["client"], st.session_state["model"], st.session_state["botName"])
+apt_chat()
             

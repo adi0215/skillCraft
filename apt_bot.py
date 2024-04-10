@@ -4,7 +4,6 @@ import io
 from PIL import Image
 import pyaudio
 import wave
-import numpy as np
 import threading
 from streamlit_extras.stylable_container import stylable_container
 import os
@@ -41,35 +40,61 @@ def transcribe_audio(filename, model):
     result = model.transcribe(filename)
     return result["text"]
 
-def generate(prompt, client,botName):
-    
+def generate(prompt, assistant_id, client, botName):
+    client.beta.threads.messages.create(
+        thread_id=st.session_state.thread_id, role="user", content=prompt
+    )
+    run = client.beta.threads.runs.create(
+        thread_id=st.session_state.thread_id,
+        assistant_id=assistant_id
+    )
+
     with st.spinner("Generating response..."):
-        response = client.chat.completions.create(
-            model="ft:gpt-3.5-turbo-0125:personal:hrbotfinal:94rYXqzX",
-            messages=[
-                {"role": "system", "content": "You are a Human Resources(HR) Interviewer Bot. You are supposed to judge the user's response on attributes like choice of vocabulary, fluency, flow, confidence etc. and score the user's response out of 10 for the HR Interview questions such as the following.\nHR Question: What are your greatest professional strengths?"}, 
-                {"role": "user", "content": "Well, I, uh... I'm pretty good at... communication and, uh, I'm, like, really organized... I think. Additionally, I've been told that I'm very proactive in resolving misunderstandings and conflicts."}
-            ]
+        while run.status != "completed":
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
+                thread_id=st.session_state.thread_id, run_id=run.id
+            )
+        messages = client.beta.threads.messages.list(
+            thread_id=st.session_state.thread_id,
+            order="asc"
         )
-    full_response = response.choices[0].message.content
-    if full_response:
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
-    with st.chat_message("assistant"):
-        st.markdown(f"**{botName}** : {full_response}",unsafe_allow_html=True)
-    full_response = ""
+        assistant_messages_for_run = [
+            message
+            for message in messages
+            if message.run_id == run.id and message.role == "assistant"
+        ]
+        print(assistant_messages_for_run)
+        if 'images' not in st.session_state:
+            st.session_state['images'] = []
+        for message in assistant_messages_for_run:
+            full_response = ""
+            for content in message.content:
+                if content.type == "image_file":
+                    image_data = client.files.content(content.image_file.file_id)
+                    image_data_bytes = image_data.read()
+                    image = Image.open(io.BytesIO(image_data_bytes))
+                    st.session_state.messages.append({"role": "assistant", "image": image})
+                    st.image(image)
+                else:
+                    full_response += content.text.value
+                if full_response:
+                    st.session_state.messages.append({"role": "assistant", "content": full_response})
+                with st.chat_message("assistant"):
+                    st.markdown(f"**AptBot** : {full_response}",unsafe_allow_html=True)
+                full_response = ""
                 
-def mainGPT(thread_id, client, model,botName):
+def mainGPT(assistant_id, thread_id, client, model, botName):
     #st.set_page_config(layout="wide")
     st.session_state.start_chat = True
     st.session_state.thread_id = thread_id
-    
     with stylable_container(
         key="combined_container",
         css_styles="""
             {
                 position: fixed;
                 bottom: 50px;
-                width: 42vw;
+                width: 50vw;
                 justify-content: space-between;
             }
             """,
@@ -100,12 +125,7 @@ def mainGPT(thread_id, client, model,botName):
         if "openai_model" not in st.session_state:
             st.session_state.openai_model = "gpt-4-turbo-preview"
         if "messages" not in st.session_state:
-            if botName == "CodeX":
-                st.session_state.messages = [{"role": "assistant", "content": f"**{botName}** : Hi! I'm {botName}. What can I help you with?"}]
-            elif botName == "HR bot":
-                st.session_state.messages = [{"role": "assistant", "content": f"**{botName}** : Hi! I'm {botName}. Shall we start the interview?"}]
-            elif botName == 'AptiBot':
-                st.session_state.messages = [{"role": "assistant", "content": f"**{botName}** : Hi! I'm {botName}. I can help you with aptitude questions. Please select a category from the sidebar."}]
+                st.session_state.messages = [{"role": "assistant", "content": f"**AptBot** : Hi! I'm AptBot. I can help you with Aptitude Questions. Please let me know if you require help with anyhting!"}]
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 if "image" in message:
@@ -123,7 +143,7 @@ def mainGPT(thread_id, client, model,botName):
                     st.session_state.messages.append({"role": "user", "content": transcription})
                     with st.chat_message("user"):
                         st.markdown(f"**You** : {transcription}")
-                    generate(transcription, client,botName)
+                    generate(transcription, assistant_id, client,botName)
             else:
                 st.session_state['stop_event'].clear()
                 st.session_state['record_thread'] = threading.Thread(target=record_audio, args=(WAVE_OUTPUT_FILENAME, st.session_state['stop_event']))
@@ -134,6 +154,6 @@ def mainGPT(thread_id, client, model,botName):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(f"**You** : {prompt}")
-            generate(prompt, client,botName)
+            generate(prompt, assistant_id, client, botName)
     mic = None
     prompt = ""
