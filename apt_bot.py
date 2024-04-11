@@ -125,7 +125,7 @@ def mainGPT(assistant_id, thread_id, client, model, botName):
         if "openai_model" not in st.session_state:
             st.session_state.openai_model = "gpt-4-turbo-preview"
         if "messages" not in st.session_state:
-                st.session_state.messages = [{"role": "assistant", "content": f"**AptBot** : Hi! I'm AptBot. I can help you with Aptitude Questions. Please let me know if you require help with anyhting!"}]
+                st.session_state.messages = [{"role": "assistant", "content": f"**AptBot** : Hi! I'm AptBot. I can help you with Aptitude Questions. Please let me know if you require help with anything!"}]
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 if "image" in message:

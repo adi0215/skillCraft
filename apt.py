@@ -42,8 +42,31 @@ def next_q(quiz_len):
     st.session_state.current_question += 1
     if st.session_state.current_question == quiz_len:
         with st.sidebar:
-            st.write("Your score is",st.session_state.player_score,"/",quiz_len)
-            st.write("Quiz ended")
+            plcholder = st.empty()
+            with plcholder:
+                _ = card(
+                        title=f"Your Final Score: {st.session_state.player_score}/{quiz_len}",
+                        text=f"Quiz Ended!. Please select another category",
+                        styles={
+                            "card": {
+                                "width": "400px",
+                                "height": "250px",
+                                "border-radius": "60px",
+                                "box-shadow": "0 0 10px rgba(0,0,0,0.5)",
+                                "bg-color": "#0e1117"
+                            },
+                            "title": {
+                                "color": "#7CFC00",
+                                "font-family": "Consolas"
+                            },
+                            "text": {
+                                "font-family": "Consolas"
+                            }
+                        }
+                    )
+            #st.write("Your score is",st.session_state.player_score,"/",quiz_len)
+            #st.write("Quiz ended")
+        plcholder = st.empty()
         st.session_state.end_quiz = True
 def displayTab(selected_category):
     if (not st.session_state.end_quiz) or (selected_category not in st.session_state["loaded_apti_categories"].keys()):
@@ -56,6 +79,7 @@ def displayTab(selected_category):
             st.sidebar.markdown(f"# Questions for {selected_category}")
             ind = st.session_state.current_question
             with st.sidebar:
+                st.markdown(f":green[**Current Score: {st.session_state.player_score}/{quiz_len}**]")
                 question = st.session_state["loaded_apti_categories"][selected_category][ind]
                 ans = stb.single_choice(question=question["fields"]["question"],options=[question["fields"]["op1"],question["fields"]["op2"],question["fields"]["op3"],question["fields"]["op4"]],answer_index=question["fields"]["ans_int"])
                 if ans[0]:
