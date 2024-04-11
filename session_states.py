@@ -27,6 +27,7 @@ def init_assistant():
         st.session_state["thread_id"] = thread.id
         st.session_state["apt_thread_id"] = apt_thread.id
         st.session_state["apt_assistant_id"] = "asst_FJ9BDUSunTsXUoNwxpu0O4Nz"
+        st.session_state["code_runner_assistant_id"] = "asst_nAblrP2PrUxPVnbf660jgQbi"
         st.session_state["BASE_ID"] = st.secrets['BASE_ID']
         st.session_state["API_KEY"] = st.secrets['API_KEY']
         airtable_categories = Airtable(st.session_state["BASE_ID"], "categories", api_key=st.session_state["API_KEY"])
