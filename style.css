@@ -3,11 +3,11 @@ div.st-emotion-cache-1r6slb0 button.st-emotion-cache-19rxjzo.ef3psqc12{
   
     height: 50px;
     width: 200px;
-    margin-top: 50px;
+    margin-top: 10px;
     margin-bottom: 50px;
 }
 
-@keyframes myAnim {
+/*@keyframes myAnim {
 	0% {
 		opacity: 0;
 		transform: translateY(-250px);
@@ -17,7 +17,7 @@ div.st-emotion-cache-1r6slb0 button.st-emotion-cache-19rxjzo.ef3psqc12{
 		opacity: 1;
 		transform: translateY(0);
 	}
-}
+}*/
 
 div.stMarkdown p{
     color: white;
@@ -30,11 +30,11 @@ div.stMarkdown p{
     font-style: normal;
     animation: myAnim 2s ease 0s 1 normal forwards;
 }
-div.row-widget.stButton{
+/*div.row-widget.stButton{
     text-align: center;
-}
+}*/
 
-button.st-emotion-cache-19rxjzo.ef3psqc12{
+/*button.st-emotion-cache-19rxjzo.ef3psqc12{
     border-radius: 30px;
     text-align: center;
     margin-top: 100px;
@@ -46,6 +46,6 @@ button.st-emotion-cache-19rxjzo.ef3psqc12{
 button.st-emotion-cache-19rxjzo.ef3psqc12:hover{
     border-color: #45afcc;
     color: #45afcc;
-}
+}*/
 
 
