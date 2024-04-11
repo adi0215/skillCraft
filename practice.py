@@ -60,7 +60,6 @@ def code_runner(question, code):
                 return json.loads(json_file)
         
 
-
 def get_questions_by_category(category):
     try:
         filter_formula = f"{{cname}}='{category}'"
